@@ -65,7 +65,6 @@ module HTMLProofer
         status: status,
         message: msg
       }
-
       @cache_log[clean_url(url)] = data
     end
 

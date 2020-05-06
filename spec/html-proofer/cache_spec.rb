@@ -142,6 +142,22 @@ describe 'Cache test' do
 
       Timecop.return
     end
+
+    it 'works for norwegian' do
+      # this is frozen to within 7 days of the log
+      new_time = Time.local(2015, 10, 27, 12, 0, 0)
+      Timecop.freeze(new_time)
+
+      expect_any_instance_of(HTMLProofer::Cache).to receive(:write)
+
+      # we expect an add since we are mocking outside the timeframe
+      expect_any_instance_of(HTMLProofer::Cache).to receive(:add).with('https://pappaperm.com/innlegg/idiotmarkedsf%C3%B8ring.html', ['spec/html-proofer/fixtures/cache/norwegian_link.html'], 200)
+
+      file = "#{FIXTURES_DIR}/cache/norwegian_link.html"
+      proofer = run_proofer(file, :file, cache: { timeframe: '5d', cache_file: cache_file_name }.merge(default_cache_options))
+
+      Timecop.return
+    end
   end
 
   context 'new url added' do
