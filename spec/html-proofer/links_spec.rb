@@ -177,6 +177,12 @@ describe 'Links test' do
     expect(proofer.failed_tests).to eq []
   end
 
+  it 'ignores doi links' do
+    ignorable_links = "#{FIXTURES_DIR}/links/doi_links.html"
+    proofer = run_proofer(ignorable_links, :file, url_ignore: [/doi.org/])
+    expect(proofer.failed_tests).to eq []
+  end
+
   it 'translates links via url_swap' do
     translated_link = "#{FIXTURES_DIR}/links/link_translated_via_href_swap.html"
     proofer = run_proofer(translated_link, :file, url_swap: { %r{\A/articles/([\w-]+)} => '\\1.html' })
