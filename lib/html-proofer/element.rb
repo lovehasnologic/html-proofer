@@ -8,7 +8,7 @@ module HTMLProofer
   class Element
     include HTMLProofer::Utils
 
-    attr_reader :id, :name, :alt, :href, :link, :src, :line, :data_proofer_ignore
+    attr_reader :id, :name, :alt, :href, :link, :src, :line, :data_proofer_ignore, :data_src, :data_srcset
 
     def initialize(obj, check, logger)
       @logger = logger
@@ -58,12 +58,24 @@ module HTMLProofer
       else
         @srcset = nil
       end
+
+      if defined?(@data_src)
+        @data_src.insert(0, 'http:') if %r{^//}.match?(@data_src)
+      else
+        @data_src = nil
+      end
+
+      if defined?(@data_srcset)
+        @data_srcset.insert(0, 'http:') if %r{^//}.match?(@data_srcset)
+      else
+        @data_srcset = nil
+      end
     end
 
     def url
       return @url if defined?(@url)
 
-      @url = (@src || @srcset || @href || '').delete("\u200b").strip
+      @url = (@src || @srcset || @data_src || @data_srcset || @href || '').delete("\u200b").strip
       @url = Addressable::URI.join(base.attr('href') || '', url).to_s if base
       return @url if @check.options[:url_swap].empty?
 
